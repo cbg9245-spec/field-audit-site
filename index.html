@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Field Audit — Operations Audit for Local Businesses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12181F; --ink-soft:#1B2430; --ink-softer:#232E3C;
+    --paper:#F3EFE6; --paper-dim:#E7E1D2;
+    --line:#4FD1C5; --line-dim:#2C5C58;
+    --signal:#F2A65A; --signal-dim:#6B4A2A;
+    --slate:#8A93A3; --danger:#E2725B; --ok:#6FCF97;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--ink);color:var(--paper);font-family:'Inter',sans-serif;}
+  ::selection{background:var(--line);color:var(--ink);}
+  a{color:var(--line);}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px;}
+  button{font-family:'IBM Plex Mono';cursor:pointer;}
+  .btn-primary{background:var(--line);color:var(--ink);border:none;border-radius:8px;padding:14px 26px;font-weight:600;font-size:13px;letter-spacing:.04em;text-transform:uppercase;}
+  .btn-primary:hover{background:#6fe0d4;}
+  .btn-primary:disabled{background:var(--ink-softer);color:var(--slate);cursor:not-allowed;}
+  .btn-ghost{background:none;border:1px solid var(--ink-softer);color:var(--paper);border-radius:8px;padding:13px 24px;font-size:13px;}
+  .btn-ghost:hover{border-color:var(--line);}
+  input,textarea{width:100%;background:var(--ink-soft);border:1px solid var(--ink-softer);color:var(--paper);border-radius:7px;padding:12px 14px;font-family:'Inter';font-size:14.5px;}
+  input:focus,textarea:focus{outline:2px solid var(--line);outline-offset:1px;}
+  label{display:block;font-family:'IBM Plex Mono';font-size:10.5px;letter-spacing:.08em;color:var(--slate);text-transform:uppercase;margin-bottom:6px;}
+
+  nav{display:flex;justify-content:space-between;align-items:center;padding:26px 0;}
+  .mark{font-family:'IBM Plex Mono';font-size:11px;color:var(--line);letter-spacing:.12em;border:1px solid var(--line-dim);padding:3px 7px;border-radius:3px;}
+  .hero{padding:60px 0 40px;border-bottom:1px solid var(--ink-softer);}
+  .hero h1{font-family:'Space Grotesk';font-size:44px;line-height:1.08;font-weight:700;margin:18px 0 16px;max-width:640px;letter-spacing:-.01em;}
+  .hero p.lead{color:var(--slate);font-size:16.5px;max-width:520px;line-height:1.6;margin-bottom:30px;}
+  .rail-diagram{display:flex;gap:0;margin:36px 0 10px;font-family:'IBM Plex Mono';font-size:12px;color:var(--slate);}
+  .rail-step{flex:1;text-align:center;position:relative;padding-top:16px;}
+  .rail-step::before{content:"";position:absolute;top:0;left:50%;width:9px;height:9px;background:var(--line);border-radius:50%;transform:translateX(-50%);}
+  .rail-step::after{content:"";position:absolute;top:4px;left:calc(50% + 12px);right:calc(-50% + 12px);height:1px;background:var(--line-dim);}
+  .rail-step:last-child::after{display:none;}
+  .rail-step b{display:block;color:var(--paper);font-size:12.5px;margin-top:6px;}
+
+  .pricing{padding:44px 0;border-bottom:1px solid var(--ink-softer);display:flex;gap:20px;flex-wrap:wrap;}
+  .price-card{flex:1;min-width:260px;background:var(--ink-soft);border:1px solid var(--ink-softer);border-radius:12px;padding:26px;}
+  .price-card .amt{font-family:'Space Grotesk';font-size:34px;font-weight:700;margin:8px 0 4px;}
+  .price-card ul{padding-left:18px;color:var(--slate);font-size:13.5px;line-height:1.9;margin-bottom:20px;}
+  .price-card ul li b{color:var(--paper);}
+
+  footer{padding:30px 0 60px;color:var(--slate);font-size:12px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+  .screen{max-width:640px;margin:70px auto;padding:0 24px;}
+  .screen h2{font-family:'Space Grotesk';font-size:26px;margin-bottom:6px;}
+  .screen .sub{color:var(--slate);font-size:14px;margin-bottom:28px;}
+  .card{background:var(--ink-soft);border:1px solid var(--ink-softer);border-radius:12px;padding:28px;}
+  .field-gap{margin-bottom:16px;}
+  .choice-row{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;}
+  .choice-card{flex:1;min-width:220px;background:var(--ink-soft);border:1.5px solid var(--ink-softer);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:.15s;}
+  .choice-card:hover{border-color:var(--line);}
+  .choice-card .big{font-family:'Space Grotesk';font-size:19px;font-weight:600;margin:10px 0 6px;}
+  .choice-card .small{color:var(--slate);font-size:13px;}
+
+  .chat-wrap{max-width:680px;margin:0 auto;padding:30px 24px;min-height:100vh;display:flex;flex-direction:column;}
+  .chat-log{flex:1;overflow-y:auto;padding-bottom:20px;}
+  .bubble{max-width:80%;padding:12px 16px;border-radius:12px;margin-bottom:14px;font-size:14.5px;line-height:1.55;}
+  .bubble.ai{background:var(--ink-soft);border:1px solid var(--ink-softer);margin-right:auto;border-bottom-left-radius:3px;}
+  .bubble.user{background:var(--line-dim);color:var(--paper);margin-left:auto;border-bottom-right-radius:3px;}
+  .chat-input-row{display:flex;gap:10px;position:sticky;bottom:0;background:var(--ink);padding-top:12px;}
+  .chat-progress{font-family:'IBM Plex Mono';font-size:11px;color:var(--slate);margin-bottom:10px;}
+  .typing{display:inline-flex;gap:4px;}
+  .typing span{width:5px;height:5px;background:var(--line);border-radius:50%;animation:pulse 1s infinite ease-in-out;}
+  .typing span:nth-child(2){animation-delay:.15s;} .typing span:nth-child(3){animation-delay:.3s;}
+  @keyframes pulse{0%,100%{opacity:.2;}50%{opacity:1;}}
+
+  .slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;margin-top:16px;max-height:280px;overflow-y:auto;}
+  .slot{background:var(--ink-softer);border:1px solid var(--ink-softer);border-radius:7px;padding:9px 4px;text-align:center;font-family:'IBM Plex Mono';font-size:12px;cursor:pointer;}
+  .slot:hover{border-color:var(--line);}
+  .slot.taken{opacity:.3;cursor:not-allowed;text-decoration:line-through;}
+  .slot.picked{background:var(--line);color:var(--ink);border-color:var(--line);}
+  .day-label{font-family:'IBM Plex Mono';font-size:12px;color:var(--slate);margin:16px 0 4px;}
+
+  .report-body{background:var(--paper);color:var(--ink);border-radius:12px;padding:28px 30px;font-size:14.5px;line-height:1.65;}
+  .report-body h1{font-family:'Space Grotesk';font-size:22px;margin-top:0;}
+  .report-body h2{font-family:'Space Grotesk';font-size:16px;margin-top:24px;border-bottom:2px solid var(--signal);display:inline-block;}
+  .report-body ul{padding-left:20px;}
+
+  .status-msg{font-family:'IBM Plex Mono';font-size:12.5px;margin-top:12px;}
+  .status-msg.ok{color:var(--ok);} .status-msg.err{color:var(--danger);}
+
+  .admin-link{color:var(--slate);text-decoration:underline;cursor:pointer;background:none;border:none;font-size:12px;font-family:'IBM Plex Mono';}
+  .admin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+  .admin-panel{background:var(--ink-soft);border:1px solid var(--ink-softer);border-radius:12px;padding:28px;max-width:480px;width:100%;max-height:86vh;overflow-y:auto;}
+
+  @media(max-width:640px){ .hero h1{font-size:32px;} .rail-diagram{flex-wrap:wrap;} }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.24.7/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef} = React;
+
+const SECTIONS = [
+  {title:"Business Basics", questions:[
+    "What does the business sell, and what does a typical transaction look like?",
+    "How long has it operated, and has the model changed recently?",
+    "What are peak hours/days/seasons, and slow periods?"
+  ]},
+  {title:"Staffing & Roles", questions:[
+    "Walk me through every role and what each person actually does day to day.",
+    "How are shifts scheduled, and who decides staffing levels for a given day?",
+    "What happens when someone calls out or quits?",
+    "What tasks does the owner still do personally that could be delegated?"
+  ]},
+  {title:"Order Taking & Customer Flow", questions:[
+    "What channels can a customer use to order or book (phone, walk-in, online, app, third-party)?",
+    "Once an order comes in, who touches it and in what order before it's fulfilled?",
+    "How are orders recorded — POS, paper ticket, verbal, spreadsheet?",
+    "What causes order errors or mix-ups most often?"
+  ]},
+  {title:"Operations & Routing", questions:[
+    "After an order or job is created, what are the physical steps to complete it?",
+    "If routing or dispatch is involved, how are routes or task assignments decided?",
+    "Where do things typically get stuck or wait the longest?",
+    "Is there one person or step everything bottlenecks through?"
+  ]},
+  {title:"Tools & Systems", questions:[
+    "What software or systems are used day to day (POS, scheduling, inventory, accounting)?",
+    "What's still done on paper or by memory that probably shouldn't be?",
+    "Do any of your systems fail to talk to each other, causing double work?"
+  ]},
+  {title:"Costs", questions:[
+    "What are the three largest recurring expenses?",
+    "How is waste, shrinkage, or spoilage tracked, if at all?",
+    "How much overtime or premium labor gets paid in a typical month, and why?",
+    "Are there subscriptions or tools being paid for but barely used?"
+  ]},
+  {title:"Revenue & Pricing", questions:[
+    "How is pricing set, and when was it last reviewed?",
+    "Which products or services are most and least profitable, if known?",
+    "What percentage of business is repeat vs. new customers?"
+  ]},
+  {title:"Pain Points & Goals", questions:[
+    "If you could fix one thing about how this business runs tomorrow, what would it be?",
+    "What's the growth goal for the next 12 months?"
+  ]}
+];
+const FLAT_Q = [];
+SECTIONS.forEach(s=>s.questions.forEach(q=>FLAT_Q.push({section:s.title, text:q})));
+
+async function callBackend(prompt, system, max_tokens){
+  const resp = await fetch("/api/chat", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({system, prompt, max_tokens})
+  });
+  const data = await resp.json();
+  return (data.text||"").trim();
+}
+async function sendReportEmail(toEmail, subject, message){
+  const resp = await fetch("/api/send-email", {
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({toEmail, subject, message})
+  });
+  return await resp.json();
+}
+async function notifyOwner(subject, message){
+  try{
+    const resp = await fetch("/api/notify-owner", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({subject, message})
+    });
+    return await resp.json();
+  }catch(e){ return {ok:false}; }
+}
+
+function App(){
+  const [stage,setStage] = useState("landing");
+  const [cfg,setCfg] = useState({price:"$149", serviceName:"Operations Audit", stripeLink:""});
+  const [customer,setCustomer] = useState({businessName:"", ownerName:"", email:""});
+  const [showAdmin,setShowAdmin] = useState(false);
+
+  useEffect(()=>{ loadConfig();
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("admin")==="1") setShowAdmin(true);
+  },[]);
+
+  async function loadConfig(){
+    try{ const r = await fetch("/api/admin-config"); const data = await r.json(); setCfg(data); }catch(e){}
+  }
+
+  return (
+    <div>
+      {stage==="landing" && <Landing cfg={cfg} onStart={()=>setStage("checkout")} onAdmin={()=>setShowAdmin(true)} />}
+      {stage==="checkout" && <Checkout cfg={cfg} customer={customer} setCustomer={setCustomer}
+        onPaidConfirmed={()=>setStage("choose")} />}
+      {stage==="choose" && <ChoosePath customer={customer} onNow={()=>setStage("interview")} onLater={()=>setStage("schedule")} />}
+      {stage==="interview" && <Interview customer={customer} onDone={()=>setStage("done")} />}
+      {stage==="schedule" && <Schedule customer={customer} onDone={()=>setStage("done")} />}
+      {stage==="done" && <Done customer={customer} />}
+
+      {showAdmin && <AdminOverlay cfg={cfg} onSaved={(next)=>{setCfg(next); setShowAdmin(false);}} onClose={()=>setShowAdmin(false)} />}
+    </div>
+  );
+}
+
+function Landing({cfg,onStart,onAdmin}){
+  return (
+    <div className="wrap">
+      <nav><span className="mark">FIELD AUDIT</span><button className="admin-link" onClick={onAdmin}>owner login</button></nav>
+      <div className="hero">
+        <span style={{fontFamily:"'IBM Plex Mono'",fontSize:12,color:"var(--slate)"}}>FOR LOCAL BUSINESS OWNERS</span>
+        <h1>Find out where your business is quietly leaking money.</h1>
+        <p className="lead">A structured AI interview about how your business actually runs — staffing, order taking, routing, costs — turned into a plain-English report on where to cut costs and where to make more.</p>
+        <button className="btn-primary" onClick={onStart}>Start My {cfg.serviceName} — {cfg.price}</button>
+        <div className="rail-diagram">
+          <div className="rail-step">Pay<b>Once</b></div>
+          <div className="rail-step">Interview<b>Now or scheduled</b></div>
+          <div className="rail-step">Report<b>Emailed to you</b></div>
+        </div>
+      </div>
+      <div className="pricing">
+        <div className="price-card">
+          <div style={{fontFamily:"'IBM Plex Mono'",fontSize:11,color:"var(--slate)"}}>ONE-TIME</div>
+          <div className="amt">{cfg.price}</div>
+          <ul>
+            <li><b>15–20 min interview</b> — right now or scheduled</li>
+            <li><b>Full written report</b> covering staffing, order flow, routing, costs, pricing</li>
+            <li><b>Emailed automatically</b> the moment it's ready</li>
+            <li>No subscription, no contract</li>
+          </ul>
+        </div>
+      </div>
+      <footer><span>© Field Audit</span><span>Built for small businesses that run on gut instinct, not spreadsheets.</span></footer>
+    </div>
+  );
+}
+
+function Checkout({cfg,customer,setCustomer,onPaidConfirmed}){
+  const canPay = customer.businessName && customer.email;
+  const [checking,setChecking] = useState(false);
+  const [notYet,setNotYet] = useState(false);
+
+  function goPay(){
+    if(!cfg.stripeLink){ alert("Payment isn't connected yet — add a Stripe Payment Link in Settings."); return; }
+    const url = new URL(cfg.stripeLink);
+    url.searchParams.set("prefilled_email", customer.email);
+    window.open(url.toString(), "_blank");
+  }
+
+  async function checkPaid(){
+    setChecking(true); setNotYet(false);
+    try{
+      const r = await fetch("/api/verify-payment?email="+encodeURIComponent(customer.email));
+      const data = await r.json();
+      if(data.paid){ onPaidConfirmed(); }
+      else { setNotYet(true); }
+    }catch(e){ setNotYet(true); }
+    setChecking(false);
+  }
+
+  return (
+    <div className="screen">
+      <h2>Let's get your details</h2>
+      <div className="sub">Takes 30 seconds. Your report goes to the email below.</div>
+      <div className="card">
+        <div className="field-gap"><label>Business name</label>
+          <input value={customer.businessName} onChange={e=>setCustomer({...customer,businessName:e.target.value})} placeholder="e.g. Whistle Stop Cafe" /></div>
+        <div className="field-gap"><label>Your name</label>
+          <input value={customer.ownerName} onChange={e=>setCustomer({...customer,ownerName:e.target.value})} placeholder="Owner name" /></div>
+        <div className="field-gap"><label>Email for the report</label>
+          <input type="email" value={customer.email} onChange={e=>setCustomer({...customer,email:e.target.value})} placeholder="you@business.com" /></div>
+        <div style={{display:"flex",gap:12,marginTop:20,flexWrap:"wrap"}}>
+          <button className="btn-primary" disabled={!canPay} onClick={goPay}>Continue to Payment ({cfg.price})</button>
+        </div>
+        <div className="status-msg" style={{color:"var(--slate)",marginTop:14}}>
+          Opens payment in a new tab. Once you've completed payment, come back here and click below — we check with Stripe directly.
+        </div>
+        <button className="btn-ghost" style={{marginTop:10}} disabled={!canPay || checking} onClick={checkPaid}>{checking? "Checking…":"I've completed payment →"}</button>
+        {notYet && <div className="status-msg err">We don't see that payment yet. It can take a few seconds — try again, or check the email you used matches what you entered above.</div>}
+      </div>
+    </div>
+  );
+}
+
+function ChoosePath({customer,onNow,onLater}){
+  return (
+    <div className="screen">
+      <h2>Thanks, {customer.ownerName || "there"}.</h2>
+      <div className="sub">How do you want to do the interview?</div>
+      <div className="choice-row">
+        <div className="choice-card" onClick={onNow}>
+          <div style={{fontFamily:"'IBM Plex Mono'",fontSize:11,color:"var(--line)"}}>~15–20 MIN</div>
+          <div className="big">Do it right now</div>
+          <div className="small">Chat with the AI interviewer immediately. Report emailed as soon as you finish.</div>
+        </div>
+        <div className="choice-card" onClick={onLater}>
+          <div style={{fontFamily:"'IBM Plex Mono'",fontSize:11,color:"var(--line)"}}>PICK A TIME</div>
+          <div className="big">Schedule for later</div>
+          <div className="small">Book a slot in the next two weeks. You'll get a confirmation email.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Interview({customer,onDone}){
+  const [log,setLog] = useState([]);
+  const [qIndex,setQIndex] = useState(0);
+  const [followupUsed,setFollowupUsed] = useState({});
+  const [input,setInput] = useState("");
+  const [thinking,setThinking] = useState(false);
+  const [phase,setPhase] = useState("asking");
+  const [report,setReport] = useState("");
+  const [emailStatus,setEmailStatus] = useState(null);
+  const logEndRef = useRef(null);
+  const startedRef = useRef(false);
+
+  useEffect(()=>{ if(!startedRef.current){ startedRef.current=true; begin(); } },[]);
+  useEffect(()=>{ logEndRef.current?.scrollIntoView({behavior:"smooth"}); },[log,thinking]);
+
+  function push(role,text){ setLog(prev=>[...prev,{role,text}]); }
+
+  function begin(){
+    push("ai", `Hi ${customer.ownerName||"there"} — I'm going to ask about how ${customer.businessName||"your business"} actually runs day to day. Answer however's natural, this isn't a form.\n\n${FLAT_Q[0].text}`);
+  }
+
+  async function handleSend(){
+    if(!input.trim() || thinking) return;
+    const answer = input.trim();
+    push("user", answer);
+    setInput("");
+    setThinking(true);
+
+    const q = FLAT_Q[qIndex];
+    const alreadyFollowedUp = !!followupUsed[qIndex];
+
+    if(!alreadyFollowedUp){
+      const decideSystem = "You are screening interview answers for a business operations audit. Given the question and the owner's answer, decide if a single, specific follow-up question would surface a real operational or cost detail, or if the answer is already complete enough to move on. Reply with exactly one word: FOLLOWUP or MOVEON.";
+      const decision = await callBackend(`Question: "${q.text}"\nAnswer: "${answer}"`, decideSystem, 5);
+      if(decision.toUpperCase().includes("FOLLOWUP")){
+        const followSystem = "You are a warm, sharp small-business operations consultant chatting live with an owner. Given the question just asked and their answer, ask exactly ONE short, natural, specific follow-up question to dig into a cost or efficiency detail. Do not repeat the original question. Output only the follow-up question, nothing else.";
+        const followupQ = await callBackend(`Question: "${q.text}"\nAnswer: "${answer}"`, followSystem, 100);
+        setFollowupUsed(prev=>({...prev,[qIndex]:true}));
+        push("ai", followupQ);
+        setThinking(false);
+        return;
+      }
+    }
+
+    const nextIndex = qIndex+1;
+    if(nextIndex >= FLAT_Q.length){
+      push("ai", "That covers everything I need. Give me a moment to put your report together...");
+      setThinking(false);
+      setPhase("generating");
+      await finish([...log, {role:"user",text:answer}]);
+      return;
+    }
+    const transitionSystem = "You are a warm, sharp small-business operations consultant conducting a live chat interview. Briefly acknowledge the owner's last answer in one short sentence (no generic praise, just a real acknowledgment), then ask the next question naturally, in your own words but preserving its full meaning. Output only your message, nothing else.";
+    const msg = await callBackend(`Owner's last answer: "${answer}"\nNext question to ask: "${FLAT_Q[nextIndex].text}"`, transitionSystem, 150);
+    setQIndex(nextIndex);
+    push("ai", msg);
+    setThinking(false);
+  }
+
+  async function finish(fullLog){
+    const transcript = fullLog.map(m=> (m.role==="ai"?"Interviewer: ":"Owner: ")+m.text).join("\n");
+    const system = `You are a sharp, no-nonsense small-business operations consultant. You've just finished a live chat interview with a business owner. Write a clear report in markdown, using ONLY what's in the transcript — never invent details. Structure: # Operations Report for ${customer.businessName||"the Business"}, ## Executive Summary (3-4 sentences), ## Cost-Cutting Opportunities (bulleted, each with a brief why + rough directional impact), ## Profit-Maximizing Opportunities (same format), ## Operational Risks to Watch, ## Recommended Next Steps (numbered, 3-5, prioritized). Direct and practical, no fluff.`;
+    const text = await callBackend(transcript, system, 1800);
+    setReport(text);
+    const custResult = await sendReportEmail(customer.email, `Your Operations Report — ${customer.businessName||""}`, text);
+    const ownerResult = await notifyOwner(`New completed audit: ${customer.businessName||"(no name)"}`,
+      `Interview just completed for ${customer.businessName} (${customer.ownerName}, ${customer.email}).\n\n${text}`);
+    setEmailStatus({customer:custResult, owner:ownerResult});
+    setPhase("sent");
+  }
+
+  function mdToHtml(md){
+    if(!md) return "";
+    let html = md.replace(/^### (.*$)/gim,"<h3>$1</h3>").replace(/^## (.*$)/gim,"<h2>$1</h2>").replace(/^# (.*$)/gim,"<h1>$1</h1>")
+      .replace(/\*\*(.*?)\*\*/gim,"<b>$1</b>").replace(/^\- (.*$)/gim,"<li>$1</li>").replace(/^\d+\.\s(.*$)/gim,"<li>$1</li>");
+    html = html.replace(/(<li>.*?<\/li>\n?)+/gims, m => "<ul>"+m+"</ul>");
+    html = html.split("\n\n").map(p=> p.startsWith("<h")||p.startsWith("<ul")? p : `<p>${p}</p>`).join("\n");
+    return html;
+  }
+
+  if(phase==="generating"){
+    return <div className="chat-wrap"><div className="screen" style={{margin:"auto"}}>
+      <div className="typing"><span></span><span></span><span></span></div>
+      <div style={{marginTop:14,fontFamily:"'IBM Plex Mono'",fontSize:13,color:"var(--slate)"}}>Writing your report and sending it to {customer.email}…</div>
+    </div></div>;
+  }
+  if(phase==="sent"){
+    return <div className="screen">
+      <h2>Done — report sent</h2>
+      <div className="status-msg ok">{emailStatus?.customer?.ok? `Emailed to ${customer.email}.` : "There was a problem emailing the report — the text is shown below, you can copy it."}</div>
+      <div className="report-body" style={{marginTop:20}} dangerouslySetInnerHTML={{__html: mdToHtml(report)}}></div>
+      <button className="btn-ghost" style={{marginTop:20}} onClick={onDone}>Finish</button>
+    </div>;
+  }
+
+  return (
+    <div className="chat-wrap">
+      <div className="chat-progress">Question {Math.min(qIndex+1,FLAT_Q.length)} of {FLAT_Q.length} · {FLAT_Q[Math.min(qIndex,FLAT_Q.length-1)].section}</div>
+      <div className="chat-log">
+        {log.map((m,i)=>(<div key={i} className={"bubble "+m.role}>{m.text}</div>))}
+        {thinking && <div className="bubble ai"><div className="typing"><span></span><span></span><span></span></div></div>}
+        <div ref={logEndRef}></div>
+      </div>
+      <div className="chat-input-row">
+        <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter") handleSend();}} placeholder="Type your answer..." disabled={thinking} />
+        <button className="btn-primary" onClick={handleSend} disabled={thinking || !input.trim()}>Send</button>
+      </div>
+    </div>
+  );
+}
+
+function Schedule({customer,onDone}){
+  const [bookings,setBookings] = useState([]);
+  const [picked,setPicked] = useState(null);
+  const [confirming,setConfirming] = useState(false);
+  const [done,setDone] = useState(false);
+  const [err,setErr] = useState(null);
+
+  useEffect(()=>{ loadBookings(); },[]);
+  async function loadBookings(){
+    try{ const r = await fetch("/api/bookings"); setBookings(await r.json()); }catch(e){ setBookings([]); }
+  }
+
+  const days = [];
+  for(let d=1; d<=14; d++){
+    const dt = new Date(); dt.setDate(dt.getDate()+d);
+    if(dt.getDay()===0 || dt.getDay()===6) continue;
+    days.push(dt);
+  }
+  const times = ["9:00 AM","10:00 AM","11:00 AM","1:00 PM","2:00 PM","3:00 PM","4:00 PM"];
+
+  function slotKey(dt,t){ return dt.toISOString().slice(0,10)+" "+t; }
+  function isTaken(dt,t){ return bookings.some(b=>b.slot===slotKey(dt,t)); }
+
+  async function confirmBooking(){
+    setConfirming(true); setErr(null);
+    try{
+      const resp = await fetch("/api/bookings", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({slot:picked, businessName:customer.businessName, ownerName:customer.ownerName, email:customer.email})
+      });
+      const data = await resp.json();
+      if(!data.ok){ setErr(data.error||"Booking failed — try another slot."); await loadBookings(); setConfirming(false); return; }
+      await sendReportEmail(customer.email, `Interview scheduled — ${picked}`, `Your operations interview for ${customer.businessName} is booked for ${picked}. You'll get a link or call at that time. If you need to reschedule, reply to this email.`);
+      await notifyOwner(`New booking: ${customer.businessName} — ${picked}`, `${customer.ownerName} (${customer.email}) booked an interview for ${picked}.`);
+      setDone(true);
+    }catch(e){ setErr("Booking failed — try again."); }
+    setConfirming(false);
+  }
+
+  if(done){
+    return <div className="screen"><h2>You're booked</h2>
+      <div className="sub">{picked}</div>
+      <div className="status-msg ok">A confirmation was emailed to {customer.email}.</div>
+      <button className="btn-ghost" style={{marginTop:16}} onClick={onDone}>Finish</button>
+    </div>;
+  }
+
+  return (
+    <div className="screen">
+      <h2>Pick a time</h2>
+      <div className="sub">Next two weeks, business hours. All times shown are the interviewer's local time.</div>
+      {days.map((dt,di)=>(
+        <div key={di}>
+          <div className="day-label">{dt.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}</div>
+          <div className="slot-grid">
+            {times.map(t=>{
+              const key = slotKey(dt,t);
+              const taken = isTaken(dt,t);
+              return <div key={t} className={"slot "+(taken?"taken":"")+(picked===key?" picked":"")}
+                onClick={()=>{ if(!taken) setPicked(key); }}>{t}</div>;
+            })}
+          </div>
+        </div>
+      ))}
+      {picked && <div className="card" style={{marginTop:20}}>
+        <div>Confirm: <b>{picked}</b></div>
+        <button className="btn-primary" style={{marginTop:14}} disabled={confirming} onClick={confirmBooking}>{confirming?"Booking…":"Confirm booking"}</button>
+      </div>}
+      {err && <div className="status-msg err">{err}</div>}
+    </div>
+  );
+}
+
+function Done({customer}){
+  return <div className="screen"><h2>All set, {customer.ownerName||"thanks"}.</h2>
+    <div className="sub">You can close this tab.</div></div>;
+}
+
+function AdminOverlay({cfg,onSaved,onClose}){
+  const [local,setLocal] = useState({...cfg, passcode:""});
+  const [status,setStatus] = useState(null);
+  const [saving,setSaving] = useState(false);
+
+  async function save(){
+    setSaving(true); setStatus(null);
+    try{
+      const resp = await fetch("/api/admin-config", {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(local)
+      });
+      const data = await resp.json();
+      if(data.ok){ onSaved(local); }
+      else { setStatus(data.error || "Save failed."); }
+    }catch(e){ setStatus("Save failed — check your connection."); }
+    setSaving(false);
+  }
+
+  return (
+    <div className="admin-overlay" onClick={e=>{ if(e.target===e.currentTarget) onClose(); }}>
+      <div className="admin-panel">
+        <h2 style={{fontFamily:"'Space Grotesk'",marginTop:0}}>Site Settings</h2>
+        <div className="field-gap"><label>Service name</label><input value={local.serviceName} onChange={e=>setLocal({...local,serviceName:e.target.value})} /></div>
+        <div className="field-gap"><label>Price (display text)</label><input value={local.price} onChange={e=>setLocal({...local,price:e.target.value})} /></div>
+        <div className="field-gap"><label>Stripe Payment Link</label><input value={local.stripeLink} onChange={e=>setLocal({...local,stripeLink:e.target.value})} placeholder="https://buy.stripe.com/..." /></div>
+        <div className="field-gap"><label>Passcode</label><input type="password" value={local.passcode} onChange={e=>setLocal({...local,passcode:e.target.value})} placeholder="Set in Cloudflare as ADMIN_PASSCODE" /></div>
+        <div style={{display:"flex",gap:10,marginTop:14}}>
+          <button className="btn-primary" disabled={saving} onClick={save}>{saving?"Saving…":"Save"}</button>
+          <button className="btn-ghost" onClick={onClose}>Close</button>
+        </div>
+        {status && <div className="status-msg err">{status}</div>}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
