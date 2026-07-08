@@ -322,6 +322,15 @@ function Interview({customer,onDone}){
   useEffect(()=>{ logEndRef.current?.scrollIntoView({behavior:"smooth"}); },[log,thinking]);
 
   function push(role,text){ setLog(prev=>[...prev,{role,text}]); }
+  const isDev = new URLSearchParams(window.location.search).get("dev") === "1";
+  async function testFinish(){
+    const canned = [
+      {role:"ai", text:"test question"},
+      {role:"user", text:"This is a canned test answer covering staffing, orders, routing, costs, and pricing for a fake test business, used only to check the report and email pipeline."}
+    ];
+    setPhase("generating");
+    await finish(canned);
+  }
 
   function begin(){
     push("ai", `Hi ${customer.ownerName||"there"} — I'm going to ask about how ${customer.businessName||"your business"} actually runs day to day. Answer however's natural, this isn't a form.\n\n${FLAT_Q[0].text}`);
