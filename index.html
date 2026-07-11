@@ -421,6 +421,7 @@ function Interview({customer,onDone}){
       <div className="chat-input-row">
         <input value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter") handleSend();}} placeholder="Type your answer..." disabled={thinking} />
         <button className="btn-primary" onClick={handleSend} disabled={thinking || !input.trim()}>Send</button>
+        {isDev && <button className="btn-ghost" onClick={testFinish}>Skip to report</button>}
       </div>
     </div>
   );
