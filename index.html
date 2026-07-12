@@ -177,9 +177,12 @@ async function notifyOwner(subject, message){
 }
 
 function App(){
-  const [stage,setStage] = useState("landing");
+  const isDev = new URLSearchParams(window.location.search).get("dev") === "1";
+  const [stage,setStage] = useState(isDev ? "interview" : "landing");
   const [cfg,setCfg] = useState({price:"$149", serviceName:"Operations Audit", stripeLink:""});
-  const [customer,setCustomer] = useState({businessName:"", ownerName:"", email:""});
+  const [customer,setCustomer] = useState(isDev
+    ? {businessName:"Test Business", ownerName:"Test Owner", email:"test@example.com"}
+    : {businessName:"", ownerName:"", email:""});
   const [showAdmin,setShowAdmin] = useState(false);
 
   useEffect(()=>{ loadConfig();
