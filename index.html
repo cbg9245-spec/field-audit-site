@@ -408,6 +408,7 @@ function Interview({customer,onDone}){
     return <div className="screen">
       <h2>Done — report sent</h2>
       <div className="status-msg ok">{emailStatus?.customer?.ok? `Emailed to ${customer.email}.` : "There was a problem emailing the report — the text is shown below, you can copy it."}</div>
+      {!emailStatus?.customer?.ok && <pre style={{whiteSpace:"pre-wrap",fontSize:11,color:"var(--slate)",marginTop:8}}>{JSON.stringify(emailStatus, null, 2)}</pre>}
       <div className="report-body" style={{marginTop:20}} dangerouslySetInnerHTML={{__html: mdToHtml(report)}}></div>
       <button className="btn-ghost" style={{marginTop:20}} onClick={onDone}>Finish</button>
     </div>;
