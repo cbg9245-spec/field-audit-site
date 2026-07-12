@@ -5,5 +5,8 @@
   "compatibility_date": "2026-07-05",
   "observability": { "enabled": true },
   "assets": { "directory": ".", "binding": "ASSETS" },
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    { "binding": "AUDIT_KV", "id": "c623da49cb054f5ea007baf4d677bc07" }
+  ]
 }
